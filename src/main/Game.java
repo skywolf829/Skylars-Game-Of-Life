@@ -3,6 +3,7 @@ package main;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.Stack;
 
 import javax.swing.JPanel;
@@ -76,6 +77,19 @@ public class Game extends JPanel{
 	public int getColumns(){
 		return columns;
 	}
+	public void SetStart(ArrayList<String> lines){
+
+		setRows(lines.size());
+		setColumns(lines.size());
+		refresh();
+		for(int i = 0; i < lines.size(); i++){
+			String line = lines.get(i);
+			for(int j = 0; j < lines.size(); j++){
+				char c = line.charAt(j);
+				boardState[i][j] = Character.getNumericValue(c);
+			}	
+		}	
+	}
 	public void setRows(int r){
 		rows = r;
 
@@ -143,10 +157,10 @@ public class Game extends JPanel{
 		for(int i = 0; i < rows; i++){
 			for(int j = 0; j < columns; j++){
 				if(boardState[i][j] == 1){
-					System.out.print("X");
+					System.out.print("1");
 				}
 				else{
-					System.out.print("-");
+					System.out.print("0");
 				}
 			}
 			System.out.println();
@@ -217,7 +231,7 @@ public class Game extends JPanel{
 	public boolean gameOver(){
 		return gameOver;
 	}
-	private int numberOfNeighbors(int i, int j){
+	private int numberOfNeighbors2(int i, int j){
 		int num = 0;
 		
 		/*
@@ -295,6 +309,80 @@ public class Game extends JPanel{
 		}
 		return num;
 	}
+	private int numberOfNeighbors(int i, int j){
+		int num = 0;
+		
+		/*
+		 * Top left corner needs to only check the boxes to the right,
+		 * bottom right, and bottom
+		 */
+		if(i == 0 && j == 0){
+			num = boardState[i + 1][j] 
+					+ boardState[i][j + 1];
+		}
+		/*
+		 * Top right corner needs to only check the boxes to the left, 
+		 * bottom left, and bottom
+		 */
+		else if(i == rows - 1 && j == 0){
+			num = boardState[i - 1][j] 
+					+ boardState[i][j + 1];
+		}
+		/*
+		 * Bottom right corner needs to only check the boxes on the top,
+		 * top left, and left
+		 */
+		else if(i == rows - 1 && j == columns - 1){
+			num = boardState[i - 1][j] 
+					+ boardState[i][j - 1];
+		}
+		/*
+		 * Bottom left corner only needs to check the boxes on top,
+		 * top right, and right
+		 */
+		else if(i == 0 && j == columns - 1){
+			num = boardState[i + 1][j] 
+					+ boardState[i][j - 1];
+		}
+		/*
+		 * Top needs to check three on bottom, left, and right side
+		 */
+		else if(j == 0){
+			num = boardState[i - 1][j] + boardState[i + 1][j] +
+					 boardState[i][j + 1];
+		}
+		/*
+		 * Left wall needs to check the top, bottom, and three on right
+		 */
+		else if(i == 0){
+			num = boardState[i][j - 1] + boardState[i][j + 1] +
+					boardState[i + 1][j];
+		}
+		/*
+		 * Right wall needs to check the top, bottom, and three on left
+		 */
+		else if(i == rows - 1){
+			num = boardState[i][j - 1] + boardState[i][j + 1] +
+					boardState[i - 1][j];
+		}
+		/*
+		 * Bottom needs to check the left, right, and three on top
+		 */
+		else if(j == columns - 1){
+			num = boardState[i - 1][j] + boardState[i + 1][j] +
+					boardState[i][j - 1];
+		}
+		/*
+		 * Other spots need to check all surroundings
+		 */
+		else{
+			num = boardState[i][j - 1] +
+					boardState[i - 1][j] + 
+					boardState[i + 1][j] + 
+					boardState[i][j + 1];
+		}
+		return num;
+	}
 	private void compareBoards(){
 		if(!gameOver){
 			boolean isSame = true;
@@ -325,6 +413,27 @@ public class Game extends JPanel{
 		for(int i = 0; i < rows; i++){
 			for (int j = 0; j < columns; j++){
 				int neighbors = numberOfNeighbors(i, j);
+				if(boardState[i][j] == 0){
+					if(neighbors >= 2){
+						updatedBoard[i][j] = 1;
+					}
+				}
+				else if(boardState[i][j] == 1){
+					updatedBoard[i][j] = 1;
+				}
+			}
+		}
+		s.push(boardState);
+		compareBoards();
+		boardState = updatedBoard;
+		checkEmpty();
+		updatedBoard = new int[rows][columns];
+	
+	}
+	public void updateBoard2(){
+		for(int i = 0; i < rows; i++){
+			for (int j = 0; j < columns; j++){
+				int neighbors = numberOfNeighbors2(i, j);
 				
 				/*
 				 * If the cell is dead

@@ -308,7 +308,7 @@ MouseListener, MouseMotionListener, ChangeListener{
 			updateButtons();
 		}
 		else if(source == next){			
-			g.updateBoard();
+			g.updateBoard2();
 			g.paint();
 			updateButtons();		
 		}
@@ -318,9 +318,12 @@ MouseListener, MouseMotionListener, ChangeListener{
 			updateButtons();			
 		}
 		else if(source == clear){
+			/*
 			g.refresh();
 			g.paint();
 			updateButtons();
+			*/
+			g.printBoard();
 		}
 		else if(source == dragTo){
 			spawn = !spawn;
@@ -338,7 +341,7 @@ MouseListener, MouseMotionListener, ChangeListener{
 				updateButtons();
 			}
 			else{
-				g.updateBoard();
+				g.updateBoard2();
 				g.paint();
 				updateButtons();
 			}			

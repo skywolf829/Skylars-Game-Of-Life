@@ -1,0 +1,18 @@
+public class Receiver extends BroadcastReceiver{
+	private static Receiver instance;
+	
+	public static String text = "";
+	
+	@Override
+	public void onReceive(Context context, Intent intent){
+		String sentIndent = intent.getStringExtra(Intent.EXTRA_TEXT);
+		if(sentIntent != null){
+			text = intentText;
+		}
+	}
+	public static void createInstance(){
+		if(instance == null){
+			instance = new Receiver();
+		}	
+	}
+}
